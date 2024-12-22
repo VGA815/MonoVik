@@ -1,0 +1,46 @@
+name: monovik
+
+volumes:
+  monovik-data:
+
+networks:
+  monovik-net:
+    driver: bridge
+
+services:
+  monovik.webapi:
+    image: ${DOCKER_REGISTRY-}monovikwebapi
+    networks:
+      - monovik-net
+    build:
+      context: .
+      dockerfile: MonoVik.WebApi/Dockerfile
+    environment:
+        ConnectionString: "User ID=root;Password=root;Host=roach-node;Port=26257;Database=microvikdb;"
+        HASH_secret: "TUtutu_Secret_Super_Key12345TUtutu_Secret_Super_Key12345"
+
+  roach-node:
+    container_name: roach-node
+    image: cockroachdb/cockroach:latest
+    ports:
+      - "8083:8080"
+      - "26257:26257"
+    command: bash -c "cockroach start --insecure --join=192.168.29.26:26257 --advertise-http-addr=192.168.29.26:8083 --listen-addr=roach-node:26257 --advertise-addr=192.168.29.26:26257 --max-sql-memory=.25 --cache=.25"
+    environment:
+      ALLOW_EMPTY_PASSWORD: yes
+    volumes:
+      - ./config/setup_db.sh:/setup_db.sh
+      - monovik-data:/cockroach/cockroach-data
+    networks:
+      - monovik-net
+
+  seq:
+    image: datalust/seq:latest
+    container_name: seq
+    environment:
+      - ACCEPT_EULA=Y
+    ports:
+      - 5007:80
+      - 5341:5341
+    networks:
+      - monovik-net
