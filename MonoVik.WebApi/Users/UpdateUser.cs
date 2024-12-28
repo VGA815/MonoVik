@@ -48,7 +48,7 @@ namespace MonoVik.WebApi.Users
                 HttpContext httpContext = httpContextAccessor.HttpContext!;
                 if (!await userRepository.ExistsAsync(request.User.UserId, context)) return Results.NotFound();
                 var jwt = new JwtSecurityTokenHandler()
-                    .ReadJwtToken(httpContext.Request.Headers["Authorization"]!.ToString().Substring("Bearer ".Length));
+                    .ReadJwtToken(httpContext.Request.Headers["Authorization"].ToString().Substring("Bearer ".Length));
                 Guid userId = Guid.Parse(jwt.Claims.FirstOrDefault(c => c.Type == "sub")!.Value);
                 if (!userId.Equals(request.User.UserId)) return Results.Forbid();
                 await userRepository.UpdateAsync(request.User, context);

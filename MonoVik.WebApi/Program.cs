@@ -15,10 +15,13 @@ using System.Text;
 using Microsoft.OpenApi.Models;
 using MonoVik.WebApi.UserPreferences.Infrastructure;
 using MonoVik.WebApi.UserBlocks.Infrastructure;
+using MonoVik.WebApi.Chats.Infrastructure;
+using MonoVik.WebApi.ChatMembers.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
+# region SwaggerGen
 builder.Services.AddSwaggerGen(options =>
 {
     options.CustomSchemaIds(t => t.FullName?.Replace('+', '.'));
@@ -52,11 +55,13 @@ builder.Services.AddSwaggerGen(options =>
 
     options.AddSecurityRequirement(securityRequirement);
 });
+# endregion
 builder.Services.AddDbContext<ApplicationContext>(options => options.UseNpgsql(builder.Configuration["ConnectionString"]));
 builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
 builder.Services.AddHealthChecks();
 builder.Services.AddEndpoints();
 builder.Host.UseSerilog((context, loggerConfig) => loggerConfig.ReadFrom.Configuration(context.Configuration));
+# region Smtp
 var smtp = new SmtpClient
 {
     Host = "smtp.gmail.com",
@@ -68,15 +73,20 @@ var smtp = new SmtpClient
 };
 builder.Services.AddFluentEmail("vovan990028@gmail.com")
     .AddSmtpSender(smtp);
+# endregion
+# region Repositories
 builder.Services.AddSingleton<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<IUserPreferenceRepository, UserPreferenceRepository>();
 builder.Services.AddSingleton<IUserBlockRepository, UserBlockRepository>();
 builder.Services.AddSingleton<IEmailVerificationTokenRepository, EmailVerificationTokenRepository>();
+builder.Services.AddSingleton<IChatRepository, ChatRepository>();
+builder.Services.AddSingleton<IChatMembersRepository, ChatMembersRepository>();
+# endregion
 builder.Services.AddSingleton<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<EmailVerificationLinkFactory>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<TokenProvider>();
-
+# region Authorization
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(o =>
@@ -90,6 +100,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ClockSkew = TimeSpan.Zero
         };
     });
+# endregion
 var app = builder.Build();
 
 app.MapEndpoints();
