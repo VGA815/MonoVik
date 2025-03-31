@@ -17,6 +17,8 @@ using MonoVik.WebApi.UserPreferences.Infrastructure;
 using MonoVik.WebApi.UserBlocks.Infrastructure;
 using MonoVik.WebApi.Chats.Infrastructure;
 using MonoVik.WebApi.ChatMembers.Infrastructure;
+using MonoVik.WebApi.Messages.Infrastructure;
+using MonoVik.WebApi.MediaFiles.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -81,9 +83,12 @@ builder.Services.AddSingleton<IUserBlockRepository, UserBlockRepository>();
 builder.Services.AddSingleton<IEmailVerificationTokenRepository, EmailVerificationTokenRepository>();
 builder.Services.AddSingleton<IChatRepository, ChatRepository>();
 builder.Services.AddSingleton<IChatMembersRepository, ChatMembersRepository>();
+builder.Services.AddSingleton<IMessagesRepository, MessagesRepository>();
+builder.Services.AddSingleton<IMediaFileRepository, MediaFileRepository>();
 # endregion
 builder.Services.AddSingleton<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<EmailVerificationLinkFactory>();
+builder.Services.AddScoped<MediaFileLinkFactory>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<TokenProvider>();
 # region Authorization

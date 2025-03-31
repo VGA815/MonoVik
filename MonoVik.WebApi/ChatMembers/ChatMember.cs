@@ -19,8 +19,6 @@ namespace MonoVik.WebApi.ChatMembers
 
         public DateTime? JoinedAt { get; set; }
 
-        public DateTime? LeftAt { get; set; }
-
         public virtual Chat Chat { get; set; } = null!;
 
         public virtual User User { get; set; } = null!;

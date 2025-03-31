@@ -17,8 +17,6 @@ namespace MonoVik.WebApi.Messages
 
         public bool? IsEdited { get; set; }
 
-        public bool? IsDeleted { get; set; }
-
         public List<string>? Tags { get; set; }
 
         public DateTime? CreatedAt { get; set; }

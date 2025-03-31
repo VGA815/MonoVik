@@ -24,6 +24,11 @@ namespace MonoVik.WebApi.Chats.Infrastructure
             return await context.Chats.AnyAsync(c => c.ChatId == chatId);
         }
 
+        public async Task<Chat?> GetById(Guid chatId, ApplicationContext context)
+        {
+            return await context.Chats.FirstOrDefaultAsync(c => c.ChatId.Equals(chatId));
+        }
+
         public IQueryable<Chat> GetChatsByMember(Guid memberId, int page, int pageSize, ApplicationContext context)
         {
             var chats = context.Chats.Include(c => c.ChatMembers)

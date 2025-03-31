@@ -47,7 +47,6 @@ CREATE TABLE IF NOT EXISTS chat_members (
     can_add_members BOOLEAN DEFAULT FALSE,
     can_remove_members BOOLEAN DEFAULT FALSE,
     joined_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-    left_at TIMESTAMP,
     PRIMARY KEY (chat_id, user_id)
 );
 

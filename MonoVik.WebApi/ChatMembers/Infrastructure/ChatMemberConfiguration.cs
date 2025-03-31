@@ -26,9 +26,6 @@ namespace MonoVik.WebApi.ChatMembers.Infrastructure
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("timestamp with time zone")
                 .HasColumnName("joined_at");
-            builder.Property(e => e.LeftAt)
-                .HasColumnType("timestamp with time zone")
-                .HasColumnName("left_at");
             builder.Property(e => e.Role)
                 .HasMaxLength(20)
                 .HasDefaultValueSql("'member'::character varying")

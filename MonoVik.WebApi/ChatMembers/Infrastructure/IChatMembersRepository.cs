@@ -8,5 +8,7 @@ namespace MonoVik.WebApi.ChatMembers.Infrastructure
         Task RemoveAsync(ChatMember chatMember, ApplicationContext context);
         IQueryable<ChatMember> GetMembersByChat(Guid chatId, int page, int pageSize, ApplicationContext context);
         Task UpdateAsync(ChatMember chatMember, ApplicationContext context);
+        Task<bool> ExistsAsync(Guid chatId, Guid userId, ApplicationContext context);
+        Task<ChatMember?> GetById(Guid chatId, Guid userId, ApplicationContext context);
     }
 }

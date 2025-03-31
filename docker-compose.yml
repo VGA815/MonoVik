@@ -2,6 +2,8 @@ name: monovik
 
 volumes:
   monovik-data:
+  monovik-media:
+  redis-data:
 
 networks:
   monovik-net:
@@ -18,6 +20,9 @@ services:
     environment:
         ConnectionString: "User ID=root;Password=root;Host=roach-node;Port=26257;Database=microvikdb;"
         HASH_secret: "TUtutu_Secret_Super_Key12345TUtutu_Secret_Super_Key12345"
+        actualPath: "/media/"
+    volumes:
+      - monovik-media:/media/
 
   roach-node:
     container_name: roach-node
@@ -29,7 +34,7 @@ services:
     environment:
       ALLOW_EMPTY_PASSWORD: yes
     volumes:
-      - ./config/setup_db.sh:/setup_db.sh
+      - ./config/cockroachdb/setup_db.sh:/setup_db.sh
       - monovik-data:/cockroach/cockroach-data
     networks:
       - monovik-net
@@ -42,5 +47,52 @@ services:
     ports:
       - 5007:80
       - 5341:5341
+    networks:
+      - monovik-net
+  centrifugo:
+    container_name: centrifugo
+    image: centrifugo/centrifugo:v5
+    volumes:
+      - ./config/centrifugo/config.json:/centrifugo/config.json
+    command: centrifugo -c config.json --api_insecure --swagger
+    ports:
+      - 5003:8000
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+    networks:
+      - monovik-net
+    depends_on:
+      - redis
+  redis:
+    image: redis:latest
+    container_name: redis
+    environment:
+      - REDIS_PASSWORD=my_redis_password
+      - REDIS_USER=my_user
+      - REDIS_USER_PASSWORD=my_user_password
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/var/lib/redis/data
+      - ./config/redis/redis.conf:/etc/redis/redis.conf
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    command: redis-server /etc/redis/redis.conf
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "$REDIS_PASSWORD", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
     networks:
       - monovik-net

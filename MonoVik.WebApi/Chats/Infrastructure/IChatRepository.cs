@@ -10,5 +10,6 @@ namespace MonoVik.WebApi.Chats.Infrastructure
         IQueryable<Chat> GetChatsByMember(Guid memberId, int page, int pageSize, ApplicationContext context);
         Task UpdateAsync(Chat chat, ApplicationContext context);
         Task<Chat?> GetWithMembers(Guid chatId, ApplicationContext context);
+        Task<Chat?> GetById(Guid chatId, ApplicationContext context);
     }
 }

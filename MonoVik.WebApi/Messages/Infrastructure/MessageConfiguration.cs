@@ -22,9 +22,6 @@ namespace MonoVik.WebApi.Messages.Infrastructure
             builder.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnName("created_at");
-            builder.Property(e => e.IsDeleted)
-                .HasDefaultValue(false)
-                .HasColumnName("is_deleted");
             builder.Property(e => e.IsEdited)
                 .HasDefaultValue(false)
                 .HasColumnName("is_edited");

@@ -11,6 +11,16 @@ namespace MonoVik.WebApi.ChatMembers.Infrastructure
             await context.SaveChangesAsync();
         }
 
+        public async Task<bool> ExistsAsync(Guid chatId, Guid userId, ApplicationContext context)
+        {
+            return await context.ChatMembers.AnyAsync(cm => cm.UserId == userId && cm.ChatId == chatId);
+        }
+
+        public async Task<ChatMember?> GetById(Guid chatId, Guid userId, ApplicationContext context)
+        {
+            return await context.ChatMembers.FirstOrDefaultAsync(cm => cm.ChatId == chatId && cm.UserId == userId);
+        }
+
         public IQueryable<ChatMember> GetMembersByChat(Guid chatId, int page, int pageSize, ApplicationContext context)
         {
             var members = context.ChatMembers
